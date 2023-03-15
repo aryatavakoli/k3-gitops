@@ -46,7 +46,7 @@ for NODE_DNS in "${NODE_HOSTNAMES[@]/%/$DOMAIN}"; do
 done
 
 # Install k3s on each node
-ssh $K3S_USER@${NODE_IPS[0]} "curl -sfL https://get.k3s.io | sh -s - server --disable=servicelb"
+ssh $K3S_USER@${NODE_IPS[0]} "curl -sfL https://get.k3s.io | sh -s - server --disable=servicelb --flannel-backend=none --disable-network-policy --cluster-init"
 TOKEN=$(ssh $K3S_USER@${NODE_IPS[0]} "sudo cat /var/lib/rancher/k3s/server/node-token")
 for NODE_IP in "${NODE_IPS[@]:1}"; do
   ssh $K3S_USER@$NODE_IP "echo $TOKEN && hostname && curl -sfL https://get.k3s.io | K3S_URL=https://${NODE_IPS[0]}:6443 K3S_TOKEN=$TOKEN sh -s - agent"
