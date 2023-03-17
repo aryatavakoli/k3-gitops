@@ -18,32 +18,34 @@ DOMAIN=""
 LOGIN_USER="ubuntu"
 
 # Set hostname, domain, and static IP on each node
-for i in "${!NODE_IPS[@]}"; do
-  NODE_IP=${NODE_IPS[$i]}
-  NODE_HOSTNAME=${NODE_HOSTNAMES[$i]}
-  NODE_DNS="${NODE_DNS[@]}"
+# for i in "${!NODE_IPS[@]}"; do
+#   NODE_IP=${NODE_IPS[$i]}
+#   NODE_HOSTNAME=${NODE_HOSTNAMES[$i]}
+#   NODE_DNS="${NODE_DNS[@]}"
   
-  ssh $LOGIN_USER@$NODE_IP "sudo echo '127.0.0.1 localhost' > /etc/hosts &&
-                      sudo echo '$NODE_IP $NODE_HOSTNAME.$DOMAIN $NODE_HOSTNAME' | sudo tee -a /etc/hosts &&
-                      sudo echo $NODE_HOSTNAME > /etc/hostname &&
-                      sudo echo $DOMAIN > /etc/domainname &&
-                      sudo cat <<EOT >> /etc/network/interfaces
-auto eth0
-iface eth0 inet static
-address $NODE_IP
-netmask $NODE_NETMASK
-gateway $NODE_GATEWAY
-dns-nameservers $NODE_DNS
-EOT"
-done
+#   ssh $LOGIN_USER@$NODE_IP "sudo echo '127.0.0.1 localhost' > /etc/hosts &&
+#                       sudo echo '$NODE_IP $NODE_HOSTNAME.$DOMAIN $NODE_HOSTNAME' | sudo tee -a /etc/hosts &&
+#                       sudo echo $NODE_HOSTNAME > /etc/hostname &&
+#                       sudo echo $DOMAIN > /etc/domainname &&
+#                       sudo cat <<EOT >> /etc/network/interfaces
+# auto eth0
+# iface eth0 inet static
+# address $NODE_IP
+# netmask $NODE_NETMASK
+# gateway $NODE_GATEWAY
+# dns-nameservers $NODE_DNS
+# EOT"
+# done
 
-# Create a new user on each node to run k3s
-K3S_USER="k3s"
-SSH_PATH="$HOME/.ssh/id_ed25519.pub"
-for NODE_DNS in "${NODE_HOSTNAMES[@]/%/$DOMAIN}"; do
-  ssh $LOGIN_USER@$NODE_IP "sudo useradd -m -s /bin/bash $K3S_USER && sudo echo '$K3S_USER ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers.d/$K3S_USER"
-  ssh-copy-id -i $SSH_PATH $K3S_USER@$NODE_DNS
-done
+# # Create a new user on each node to run k3s
+# K3S_USER="k3s"
+# SSH_PATH="$HOME/.ssh/id_ed25519.pub"
+# for NODE_DNS in "${NODE_HOSTNAMES[@]/%/$DOMAIN}"; do
+#   ssh $LOGIN_USER@$NODE_IP "sudo useradd -m -s /bin/bash $K3S_USER && sudo echo '$K3S_USER ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers.d/$K3S_USER"
+#   ssh-copy-id -i $SSH_PATH $K3S_USER@$NODE_DNS
+# done
+
+K3S_USER=$LOGIN_USER
 
 # Install k3s on each node
 ssh $K3S_USER@${NODE_IPS[0]} "curl -sfL https://get.k3s.io | sh -s - server --disable=traefik,servicelb --flannel-backend=none --disable-network-policy --cluster-init"

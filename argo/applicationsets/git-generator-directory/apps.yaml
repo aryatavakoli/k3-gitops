@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: argo-apps
+  name: apps
   namespace: argocd
 spec:
   goTemplate: true
@@ -10,7 +10,7 @@ spec:
       repoURL: https://github.com/aryatavakoli/k3-gitops
       revision: HEAD
       directories:
-      - path: applicationset/git-generator-directory/apps/*
+      - path: argo/applicationset/git-generator-directory/apps/*
   template:
     metadata:
       name: '{{.path.basename}}'
