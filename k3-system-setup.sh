@@ -3,6 +3,8 @@ helm repo update
 kubectl create namespace tigera-operator
 helm repo add projectcalico https://docs.tigera.io/calico/charts
 helm install calico projectcalico/tigera-operator -f argo/applicationsets/git-generator-directory/apps/tigera-operator/values.yaml --namespace tigera-operator
+calicoctl patch felixconfiguration default --patch='{"spec": {"bpfKubeProxyIptablesCleanupEnabled": false}}'
+kubectl create -f argo/applicationsets/git-generator-directory/apps/tigera-operator/services-endpoint-configmap.yaml -n tigera-operator
 
 kubectl create namespace metallb-system
 helm repo add metallb https://metallb.github.io/metallb
