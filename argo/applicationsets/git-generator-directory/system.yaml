@@ -1,13 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: cluster-addons
+  name: argo-apps
   namespace: argocd
 spec:
   goTemplate: true
   generators:
   - git:
-      repoURL: https://github.com/argoproj/argo-cd.git
+      repoURL: https://github.com/aryatavakoli/k3-gitops
       revision: HEAD
       directories:
       - path: applicationset/git-generator-directory/apps/*
@@ -17,7 +17,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/argoproj/argo-cd.git
+        repoURL: https://github.com/aryatavakoli/k3-gitops
         targetRevision: HEAD
         path: '{{.path.path}}'
       destination:
