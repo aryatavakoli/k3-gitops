@@ -15,4 +15,4 @@ metadata:
   namespace: metallb-system  
 spec:
   ipAddressPools:
-  - first-pool
+  - metallb-pool
